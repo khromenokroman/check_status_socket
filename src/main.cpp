@@ -8,6 +8,8 @@
 #include <netinet/tcp.h>
 #include <sstream>
 
+#include "check_socket.hpp"
+
 static constexpr char const *IP_ADDRESS = "127.0.0.1";
 static constexpr int PORT = 1993;
 
