@@ -33,6 +33,25 @@ namespace Errors {
     inline std::error_code make_error_code(Error_code err) noexcept {
         return std::error_code{static_cast<int>(err), Library::instance()};
     }
+
+    namespace exception {
+
+        struct Library : std::exception {
+            explicit Library(std::string message_) : message{std::move(message_)} {};
+
+            [[nodiscard]] const char *what() const noexcept override {
+                return message.c_str();
+            }
+
+        private:
+            std::string message{};
+        };
+
+        struct Lib_exceptions : Library {
+            using Library::Library;
+        };
+    }
+
 }
 
 
@@ -43,20 +62,3 @@ namespace std {
 
 }
 
-namespace exception {
-
-    struct Library : std::exception {
-        explicit Library(std::string message_) : message{std::move(message_)} {};
-
-        [[nodiscard]] const char *what() const noexcept override {
-            return message.c_str();
-        }
-
-    private:
-        std::string message{};
-    };
-
-    struct Exception : Library {
-        using Library::Library;
-    };
-}
