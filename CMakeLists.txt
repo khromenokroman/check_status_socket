@@ -5,6 +5,7 @@ project(check_status_socket)
 
 add_executable(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/src/main.cpp
+        ${PROJECT_SOURCE_DIR}/src/check_socket.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)

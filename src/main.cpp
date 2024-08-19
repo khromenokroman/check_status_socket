@@ -7,6 +7,7 @@
 #include <exception>
 #include <netinet/tcp.h>
 #include <sstream>
+#include <thread>
 
 #include "check_socket.hpp"
 
@@ -115,22 +116,22 @@ int main() {
         Keepalive get_sock_settings, need_sock_settings{.keepalive=1, .tcp_keepidle=1, .tcp_keepintvl=1, .tcp_keepcnt=1};
 //        set_options_socket(sock_fd, need_sock_settings);
 
+        Check_socket ck_socket(sock_fd);
+
         while (true) {
-            read_bytes = read(sock_fd, buf, 4096);
-            if (read_bytes == -1) {
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    ::fmt::print("errno == {}\n", errno);
-                    continue;
-                }
-                throw std::runtime_error(
-                        ::fmt::format("read {}: {}", errno, strerror(errno)));
+            auto res = ck_socket.get_status();
+            if(res == STATUS::CLOSE){
+                ::fmt::print("Close!\n");
             }
-            if (read_bytes == 0) {
-                ::fmt::print("maybe socket close...\n");
-                close(sock_fd);
+            if (res == STATUS::OPEN){
+                continue;
+            }
+            if (res == STATUS::ERROR){
                 break;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+
     } catch (std::exception const &ex) {
         ::fmt::print("exception: {}\n", ex.what());
         return -1;
